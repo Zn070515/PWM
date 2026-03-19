@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive PWM demo with VCC, target voltage, duty cycle, frequency, LED persistence-of-vision, and motor inertia visualization." />
+  <meta name="theme-color" content="#1d4ed8" />
+  <meta property="og:title" content="PWM Interactive Demo" />
+  <meta property="og:description" content="A static front-end PWM visualization with interactive controls and load animations." />
+  <meta property="og:type" content="website" />
+  <title>PWM Interactive Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>PWM Interactive Demo</h1>
+      <p>
+        Set VCC, target voltage, duty cycle, and frequency, then watch how PWM drives an LED and a motor.
+      </p>
+    </section>
+
+    <section class="panel app-grid">
+      <div class="controls">
+        <div class="control">
+          <label for="vcc">VCC (Power Supply) <span id="vccVal" class="unit">12.0 V</span></label>
+          <input id="vcc" type="range" min="3" max="48" step="0.5" value="12" />
+        </div>
+
+        <div class="control">
+          <label for="targetVoltage">Target Voltage <span id="targetVal" class="unit">6.0 V</span></label>
+          <input id="targetVoltage" type="range" min="0" max="12" step="0.1" value="6" />
+        </div>
+
+        <div class="control">
+          <label for="dutyCycle">Duty Cycle <span id="dutyVal" class="unit">50%</span></label>
+          <input id="dutyCycle" type="range" min="0" max="100" step="1" value="50" />
+        </div>
+
+        <div class="control">
+          <label for="frequency">Frequency <span id="freqVal" class="unit">500 Hz</span></label>
+          <input id="frequency" type="range" min="5" max="3000" step="5" value="500" />
+        </div>
+
+        <div class="control row-control">
+          <button id="matchDuty" type="button">Match Duty to Target</button>
+          <span class="unit" id="dutyHint">Suggested duty: 50%</span>
+        </div>
+
+        <div class="stats">
+          <div class="stat-box">
+            <strong>Average Voltage</strong>
+            <span id="avgVoltage">6.00 V</span>
+          </div>
+          <div class="stat-box">
+            <strong>Voltage Error</strong>
+            <span id="errorVoltage">0.00 V</span>
+          </div>
+          <div class="stat-box">
+            <strong>ON Time / Cycle</strong>
+            <span id="onTime">1.00 ms</span>
+          </div>
+          <div class="stat-box">
+            <strong>OFF Time / Cycle</strong>
+            <span id="offTime">1.00 ms</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="visuals">
+        <div class="chart">
+          <h2>PWM Signal</h2>
+          <canvas id="pwmCanvas" width="900" height="260"></canvas>
+          <div class="legend">
+            <span><i class="swatch swatch-pwm"></i>PWM digital pulse</span>
+            <span><i class="swatch swatch-avg"></i>Average voltage</span>
+            <span><i class="swatch swatch-target"></i>Target voltage</span>
+          </div>
+        </div>
+
+        <div class="load-grid">
+          <div class="load-card">
+            <h3>LED Load (Persistence of Vision)</h3>
+            <div class="led-stage">
+              <div class="led-bulb" id="ledBulb"></div>
+              <div class="led-label" id="ledLabel">Brightness: 50%</div>
+            </div>
+          </div>
+
+          <div class="load-card">
+            <h3>Motor Load (Inertia)</h3>
+            <div class="motor-stage">
+              <div class="motor-ring">
+                <div class="motor-rotor" id="motorRotor">
+                  <span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+              <div class="motor-label" id="motorLabel">Speed: 50%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel explain" id="explanation">
+      <h2>PWM Principle</h2>
+      <p>
+        PWM (Pulse Width Modulation) controls power by switching ON and OFF very fast. The key is the ON-time ratio, called duty cycle.
+      </p>
+      <p>
+        If supply voltage is VCC, average output is approximately VCC multiplied by duty cycle. So even with digital pulses, the load receives a controllable analog-like average power.
+      </p>
+      <ol>
+        <li><strong>Inertia:</strong> A motor rotor has mechanical inertia, so it cannot instantly stop in every OFF interval. It responds to average energy, making speed smooth.</li>
+        <li><strong>Persistence of Vision:</strong> Human eyes integrate rapid LED flashes. At high PWM frequency, flashing is not obvious, and we perceive a stable brightness level.</li>
+      </ol>
+      <p class="mini">
+        In this demo, low frequency shows stronger flicker behavior on the LED, while motor speed changes more gradually to illustrate inertia.
+      </p>
+    </section>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
