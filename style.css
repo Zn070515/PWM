@@ -76,6 +76,9 @@ body {
   display: grid;
   gap: 10px;
   align-content: start;
+  position: sticky;
+  top: 12px;
+  align-self: start;
 }
 
 .control {
@@ -306,6 +309,90 @@ canvas {
   margin: 0 0 8px;
 }
 
+.sankey-panel h2 {
+  margin: 0 0 4px;
+}
+
+.sankey-panel {
+  margin-top: 0;
+}
+
+.sankey-subtitle {
+  margin: 0 0 10px;
+  color: #475569;
+  font-size: 0.92rem;
+}
+
+#sankeySvg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+  border: 1px solid #dbeafe;
+}
+
+.node {
+  stroke-width: 1.4;
+}
+
+.node-input {
+  fill: #e0ecff;
+  stroke: #1d4ed8;
+}
+
+.node-useful {
+  fill: #dcfce7;
+  stroke: #16a34a;
+}
+
+.node-switch {
+  fill: #ffedd5;
+  stroke: #ea580c;
+}
+
+.node-heat {
+  fill: #fee2e2;
+  stroke: #dc2626;
+}
+
+.node-title {
+  font-size: 18px;
+  font-weight: 700;
+  fill: #0f172a;
+}
+
+.node-value {
+  font-size: 16px;
+  font-weight: 700;
+  fill: #334155;
+}
+
+.flow {
+  fill: none;
+  stroke-linecap: round;
+  opacity: 0.78;
+  transition: stroke-width 240ms ease;
+}
+
+.flow.useful {
+  stroke: #22c55e;
+}
+
+.flow.switch {
+  stroke: #f97316;
+}
+
+.flow.heat {
+  stroke: #ef4444;
+}
+
+.sankey-meta {
+  margin-top: 8px;
+  color: #475569;
+  font-size: 0.88rem;
+}
+
 .explain p,
 .explain ol {
   margin: 0 0 10px;
@@ -321,8 +408,9 @@ canvas {
     grid-template-columns: 1fr;
   }
 
-  .load-grid {
-    grid-template-columns: 1fr;
+  .controls {
+    position: static;
+    top: auto;
   }
 
   .stats {

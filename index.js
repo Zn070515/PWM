@@ -31,6 +31,14 @@ const labels = {
 const pwmCanvas = document.getElementById("pwmCanvas");
 const ledBulb = document.getElementById("ledBulb");
 const motorRotor = document.getElementById("motorRotor");
+const flowUseful = document.getElementById("flowUseful");
+const flowSwitch = document.getElementById("flowSwitch");
+const flowHeat = document.getElementById("flowHeat");
+const nodeInputVal = document.getElementById("nodeInputVal");
+const nodeUsefulVal = document.getElementById("nodeUsefulVal");
+const nodeSwitchVal = document.getElementById("nodeSwitchVal");
+const nodeHeatVal = document.getElementById("nodeHeatVal");
+const sankeyMetaText = document.getElementById("sankeyMetaText");
 
 function getAxisFont() {
   const root = getComputedStyle(document.documentElement);
@@ -258,10 +266,45 @@ function updateMotor(dtSeconds) {
   labels.motorLabel.textContent = `Speed: ${(state.motorSpeed * 100).toFixed(0)}%`;
 }
 
+function updateSankey() {
+  if (!flowUseful || !flowSwitch || !flowHeat) {
+    return;
+  }
+
+  const dutyRatio = clamp(state.duty / 100, 0, 1);
+  const normalizedFreq = clamp(state.frequency / 3000, 0, 1);
+  const controlError = Math.abs(state.avgVoltage - state.target) / Math.max(state.vcc, 1e-6);
+
+  // Simple explanatory model: higher duty increases useful share,
+  // higher switching frequency slightly increases switching loss.
+  const switchLoss = clamp(6 + 12 * normalizedFreq, 4, 20);
+  const regulationPenalty = clamp(controlError * 18, 0, 18);
+  const usefulShare = clamp(32 + dutyRatio * 56 - regulationPenalty - normalizedFreq * 3, 18, 90);
+  const heatLoss = clamp(100 - usefulShare - switchLoss, 4, 70);
+
+  const usefulWidth = 8 + usefulShare * 0.28;
+  const switchWidth = 6 + switchLoss * 0.45;
+  const heatWidth = 6 + heatLoss * 0.32;
+
+  flowUseful.setAttribute("stroke-width", usefulWidth.toFixed(2));
+  flowSwitch.setAttribute("stroke-width", switchWidth.toFixed(2));
+  flowHeat.setAttribute("stroke-width", heatWidth.toFixed(2));
+
+  if (nodeInputVal) nodeInputVal.textContent = "100.0%";
+  if (nodeUsefulVal) nodeUsefulVal.textContent = `${usefulShare.toFixed(1)}%`;
+  if (nodeSwitchVal) nodeSwitchVal.textContent = `${switchLoss.toFixed(1)}%`;
+  if (nodeHeatVal) nodeHeatVal.textContent = `${heatLoss.toFixed(1)}%`;
+
+  if (sankeyMetaText) {
+    sankeyMetaText.textContent = `Estimated split at ${state.frequency.toFixed(0)} Hz, duty ${state.duty.toFixed(0)}%: useful ${usefulShare.toFixed(1)}%, switching loss ${switchLoss.toFixed(1)}%, heat/other ${heatLoss.toFixed(1)}%.`;
+  }
+}
+
 function renderStatic() {
   getData();
   updateTexts();
   drawPwmWave();
+  updateSankey();
 }
 
 function tick(now) {
